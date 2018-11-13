@@ -1,0 +1,111 @@
+Sprites - head, body, coin - 32 x 32 - 0, 0
+
+
+//**obj_snake - create event
+currentID = 0;
+alarm[0]=8;
+move_snap(32,32);
+
+
+//**obj_snake - Alarm 0
+if(currentID == 0) {
+//Direction
+//0 = Right
+//1 = Left
+//2 = Up 
+//3 = Down
+currentID += 1;
+alarm[0] = 8;
+switch(global.dir) {
+    case 0:
+        instance_create(x+34, y, obj_snake);
+        break;
+    case 1:
+        instance_create(x-34, y, obj_snake);
+        break;
+    case 2:
+        instance_create(x, y-34, obj_snake);
+        break;
+    case 3:
+        instance_create(x, y+34, obj_snake);
+        break;
+}
+} else if (currentID == (global.length - 1)){
+    instance_destroy();
+
+} else {
+    currentID += 1;
+    alarm[0] = 8;
+}
+
+
+//**obj_snake - Step
+if (x < 0) x = (room_width - 32);
+if (x > (room_width - 32)) x = 0;
+if (y < 0) y = (room_height - 32);
+if (y > (room_height - 32)) y = 0;
+
+
+//**obj_snake - Collision with obj_snake
+if (currentID == 0) game_restart();
+
+
+//**obj_snake - Draw
+//Direction
+//0 = Right
+//1 = Left
+//2 = Up 
+//3 = Down
+
+if (currentID == 0) {
+ switch(global.dir) {
+    case 0:
+        draw_sprite_ext(head, 0, x, y, 1, 1, 0, c_white, 1);
+        break;
+    case 1:
+        draw_sprite_ext(head, 0, x+32, y+32, 1, 1, 180, c_white, 1);
+        break;
+    case 2:
+        draw_sprite_ext(head, 0, x, y+32, 1, 1, 90, c_white, 1);
+        break;
+    case 3:
+        draw_sprite_ext(head, 0, x+32, y, 1, 1, 270, c_white, 1);
+        break;
+    }
+    }
+if (currentID > 0) 
+{
+draw_sprite_ext(body, 0, x, y, 1, 1, 0, c_white, 1);
+image_speed = 0.25;
+}
+
+
+//**obj_controller - Create Event
+//0=Right
+//1=Left
+//2=Up
+//3=Down
+
+global.dir = 0;
+global.length = 12;
+
+instance_create(irandom_range(32,(room_width-32)), irandom_range(32,(room_height-32)), obj_coin);
+
+
+//**obj_controller - Step Event
+if (keyboard_check_pressed(vk_right) && global.dir != 1) global.dir = 0;
+if (keyboard_check_pressed(vk_left) && global.dir != 0) global.dir = 1;
+if (keyboard_check_pressed(vk_up) && global.dir != 3) global.dir = 2;
+if (keyboard_check_pressed(vk_down) && global.dir != 2) global.dir = 3;
+
+
+//**obj_coin - Create Event
+move_snap(32,32);
+
+
+//**obj_coin - Collision with Snake Event
+instance_destroy();
+
+instance_create(irandom_range(32,(room_width-32)), irandom_range(32,(room_height-32)), obj_coin);
+
+global.length += 1;
